@@ -1,11 +1,14 @@
 const pg = require('pg');
-const envConfig = process.env.SQL_CONFIG;
+const envConfig = process.env.pg_CONFIG;
 
 const pgConfig = JSON.parse(envConfig || '{"host":"database-1.csxbhznoei2x.us-east-1.rds.amazonaws.com", "database":"themachineDB", "user":"dinobartolome", "password":"upwork2020"}');
 
-//console.log('Working with sql config: ' + JSON.stringify(sqlConfig))
+//console.log('Working with pg config: ' + JSON.stringify(pgConfig))
 var client = new pg.Client(pgConfig);
-const connection = client.connect();
+client
+  .connect()
+  .then(() => console.log('connected'))
+  .catch(err => console.error('connection error', err.stack))
 exports.select = (table, clause = '', sortClause = '', skip = 0, limit = 1) =>
   query(
     `SELECT * FROM ${table} ${clause} ${sortClause} LIMIT ${skip}, ${limit}`,
@@ -18,14 +21,14 @@ exports.insert = (table, item) =>
 
 exports.update = (table, item) =>
   query(
-    `UPDATE ${table} SET ? WHERE _id = ${connection.escape(item._id)}`,
+    `UPDATE ${table} SET ? WHERE _id = ${client.escape(item._id)}`,
     item,
     () => item
   )
 
 exports.deleteOne = (table, itemId) =>
   query(
-    `DELETE FROM ${table} WHERE _id = ${connection.escape(itemId)}`,
+    `DELETE FROM ${table} WHERE _id = ${client.escape(itemId)}`,
     {},
     result => result.affectedRows
   )
@@ -39,7 +42,7 @@ exports.count = (table, clause) =>
 
 exports.describeDatabase = () =>
   query('SHOW TABLES', {}, async result => {
-    const tables = result.map(entry => entry[`Tables_in_${sqlConfig.database}`])
+    const tables = result.map(entry => entry[`Tables_in_${pgConfig.database}`])
 
     return Promise.all(
       tables.map(async table => {
@@ -66,7 +69,7 @@ const describeTable = table =>
 
 const query = (query, values, handler) =>
   new Promise((resolve, reject) => {
-    connection.query(query, values, (err, results, fields) => {
+    client.query(query, values, (err, results, fields) => {
       if (err) {
         console.log(err);
         reject(err)

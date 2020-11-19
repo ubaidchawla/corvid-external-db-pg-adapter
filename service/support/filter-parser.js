@@ -1,6 +1,5 @@
 const BadRequestError = require('../../model/error/bad-request')
-const mysql = require('mysql')
-
+const pg = require('pg')
 const EMPTY = ''
 
 exports.parseFilter = filter => {
@@ -32,19 +31,19 @@ const parseInternal = filter => {
       return value ? `NOT (${value})` : value
     }
     case '$ne':
-      return `${filter.fieldName} <> ${mysql.escape(mapValue(filter.value))}`
+      return `${filter.fieldName} <> ${pg.escape(mapValue(filter.value))}`
     case '$lt':
-      return `${filter.fieldName} < ${mysql.escape(mapValue(filter.value))}`
+      return `${filter.fieldName} < ${pg.escape(mapValue(filter.value))}`
     case '$lte':
-      return `${filter.fieldName} <= ${mysql.escape(mapValue(filter.value))}`
+      return `${filter.fieldName} <= ${pg.escape(mapValue(filter.value))}`
     case '$gt':
-      return `${filter.fieldName} > ${mysql.escape(mapValue(filter.value))}`
+      return `${filter.fieldName} > ${pg.escape(mapValue(filter.value))}`
     case '$gte':
-      return `${filter.fieldName} >= ${mysql.escape(mapValue(filter.value))}`
+      return `${filter.fieldName} >= ${pg.escape(mapValue(filter.value))}`
     case '$hasSome': {
       const list = filter.value
         .map(mapValue)
-        .map(date => mysql.escape(date, null, null))
+        .map(date => pg.escape(date, null, null))
         .join(', ')
       return list ? `${filter.fieldName} IN (${list})` : EMPTY
     }
@@ -52,19 +51,19 @@ const parseInternal = filter => {
       if (!filter.value || (filter.value && filter.value.length === 0)) {
         return '';
       }
-      return `${filter.fieldName} LIKE ${mysql.escape(`%${filter.value}%`)}`
+      return `${filter.fieldName} LIKE ${pg.escape(`%${filter.value}%`)}`
     case '$urlized': {
       const list = filter.value.map(s => s.toLowerCase()).join('[- ]')
       return list ? `LOWER(${filter.fieldName}) RLIKE '${list}'` : EMPTY
     }
     case '$startsWith':
-      return `${filter.fieldName} LIKE ${mysql.escape(`${filter.value}%`)}`
+      return `${filter.fieldName} LIKE ${pg.escape(`${filter.value}%`)}`
     case '$endsWith':
-      return `${filter.fieldName} LIKE ${mysql.escape(`%${filter.value}`)}`
+      return `${filter.fieldName} LIKE ${pg.escape(`%${filter.value}`)}`
     case '$eq': {
       return filter.value === null || filter.value === undefined
         ? `${filter.fieldName} IS NULL`
-        : `${filter.fieldName} = ${mysql.escape(mapValue(filter.value))}`
+        : `${filter.fieldName} = ${pg.escape(mapValue(filter.value))}`
     }
     default:
       throw new BadRequestError(

@@ -12,10 +12,10 @@ describe('Database', () => {
   const escapeStub = sinon.stub()
   const queryStub = sinon.stub()
 
-  const sqlConfig = { database: 'themachineDB' }
+  const pgConfig = { database: 'themachineDB' }
   const createConnectionStub = sinon
     .stub()
-    .withArgs(sqlConfig)
+    .withArgs(pgConfig)
     .returns({
       escape: escapeStub,
       query: queryStub
