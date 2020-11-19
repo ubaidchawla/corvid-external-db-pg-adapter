@@ -33,7 +33,7 @@ exports.find = async payload => {
     count(collectionName, parsedFilter)
   ]);
 
-  const items = itemsRaw.map(wrapDates)
+  const items = Array.from(itemsRaw).map(wrapDates)
 
   return { items, totalCount }
 }

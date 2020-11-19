@@ -12,7 +12,7 @@ const port = process.env.PORT || 9190
 app.use(bodyParser.json())
 app.use(authMiddleware)
 
-app.post('/schemas/find', wrapError(schemas.findSchemas))
+app.post('/schemas/find', schemas.findSchemas)
 app.post('/schemas/list', wrapError(schemas.listSchemas))
 app.post('/data/find', wrapError(items.findItems))
 app.post('/data/get', wrapError(items.getItem))

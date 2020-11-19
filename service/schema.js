@@ -27,5 +27,8 @@ exports.provision = async () => {
 
 const extractAllSchemas = async () => {
   const tables = await describeDatabase()
-  return tables.map(convert)
+  if(tables != null)
+    return Array.from(tables).map(convert)
+  else
+    return {}
 }

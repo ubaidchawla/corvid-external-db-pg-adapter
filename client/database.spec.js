@@ -8,7 +8,7 @@ const expect = chai.expect
 
 describe('Database', () => {
 
-  process.env['SQL_CONFIG'] = '{ "database":"themachineDB" }'
+  process.env['PG_CONFIG'] = '{ "database":"themachineDB" }'
   const escapeStub = sinon.stub()
   const queryStub = sinon.stub()
 

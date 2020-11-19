@@ -3,5 +3,5 @@ runtime: nodejs10
 service: pg-adapter
 
 env_variables:
-  SQL_CONFIG: {PG_CONNECTION_STRING_JSON}
+  PG_CONFIG: {PG_CONNECTION_STRING_JSON}
   SECRET_KEY: wix-big-secret
