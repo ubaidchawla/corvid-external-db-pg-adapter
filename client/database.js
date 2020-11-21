@@ -53,26 +53,27 @@ query("SELECT * FROM information_schema.tables WHERE table_schema != 'pg_catalog
   }
   return Promise.all(
       tables.map(async table => {
-        // const columns = await describeTable(table)
-        // return {
-        //   table,
-        //   columns
-        // }
+        const columns = await describeTable(table)
+        return {
+          table,
+          columns
+        }
       })
     )
   })
   
-// const describeTable = table =>
-// query(`CREATE TABLE ${table}`, {}, result => {
-//     return result.map(entry => {
-//       return {
-//         name: entry['Field'],
-//         type: entry['Type'],
-//         isPrimary: entry['Key'] === 'PRI'
-//       }
-//     })
-//   })
 
+  const describeTable = table =>
+  
+  query(`SELECT a.attname AS name, format_type(a.atttypid, a.atttypmod) AS type FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '${table}'::regclass AND a.attnum > 0 AND NOT a.attisdropped ORDER BY a.attnum;`, {}, result => {
+    return (result.rows).map(entry => {
+      return {
+        name: entry['name'],
+        type: entry['type'],
+        isPrimary: entry['name'] === 'id'
+      }
+    })
+  })
 const query = (query, values, handler) =>
   new Promise((resolve, reject) => {
     pool.query(query, Array.from(values), (err, results, fields) => {

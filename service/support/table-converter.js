@@ -53,16 +53,19 @@ const extractFieldType = dbType => {
   switch (type) {
     case 'varchar':
     case 'text':
+    case 'character varying':
       return 'text'
     case 'decimal':
     case 'bigint':
     case 'int':
+    case 'integer':
       return 'number'
     case 'tinyint':
       return 'boolean'
     case 'date':
     case 'datetime':
     case 'time':
+    case 'timestamp without time zone':
       return 'datetime'
     case 'json':
     default:
