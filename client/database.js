@@ -44,32 +44,34 @@ query(
   )
 
 exports.describeDatabase = () =>
-query("SELECT * FROM information_schema.tables WHERE table_schema != 'pg_catalog' AND table_schema != 'information_schema'", {}, async result => {
-  
-   const tables = (result.rows).map(entry => entry[`Tables_in_${pgConfig.database}`])
-   console.log(tables)
-    return Promise.all(
-      Array.from(tables).map(async table => {
-        const columns = await describeTable(table)
 
-        return {
-          table,
-          columns
-        }
+query("SELECT * FROM information_schema.tables WHERE table_schema != 'pg_catalog' AND table_schema != 'information_schema'", {}, async result => {
+  var tables = []
+  for (i=0;i<result.rows.length;i++)
+  {
+    tables.push(result.rows[i].table_name);
+  }
+  return Promise.all(
+      tables.map(async table => {
+        // const columns = await describeTable(table)
+        // return {
+        //   table,
+        //   columns
+        // }
       })
     )
   })
   
-const describeTable = table =>
-query(`DESCRIBE ${table}`, {}, result => {
-    return result.map(entry => {
-      return {
-        name: entry['Field'],
-        type: entry['Type'],
-        isPrimary: entry['Key'] === 'PRI'
-      }
-    })
-  })
+// const describeTable = table =>
+// query(`CREATE TABLE ${table}`, {}, result => {
+//     return result.map(entry => {
+//       return {
+//         name: entry['Field'],
+//         type: entry['Type'],
+//         isPrimary: entry['Key'] === 'PRI'
+//       }
+//     })
+//   })
 
 const query = (query, values, handler) =>
   new Promise((resolve, reject) => {
