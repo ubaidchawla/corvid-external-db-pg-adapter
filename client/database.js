@@ -14,7 +14,7 @@ const pool = new Pool({
 
 exports.select = (table, clause = '', sortClause = '', skip = 0, limit = 1) =>
 query(
-    `SELECT * FROM ${table} ${clause} ${sortClause} LIMIT ${skip}, ${limit}`,
+    `SELECT * FROM ${table} ${clause} ${sortClause} LIMIT ${limit} OFFSET ${skip}`,
     {},
     identity => identity
   )
@@ -40,7 +40,7 @@ exports.count = (table, clause) =>
 query(
     `SELECT COUNT(*) FROM ${table} ${clause}`,
     {},
-    result => result[0]['COUNT(*)']
+    result => result.rows[0]['count']
   )
 
 exports.describeDatabase = () =>
