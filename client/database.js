@@ -1,20 +1,13 @@
-const { Pool, Client } = require('pg')
-
-const envConfig = process.env.pg_CONFIG;
-const pgConfig = JSON.parse(envConfig || '{"host":"database-1.csxbhznoei2x.us-east-1.rds.amazonaws.com", "database":"test1", "user":"dinobartolome", "password":"upwork2020"}');
-
-// const client = new Client(pgConfig)
-// client.connect()
+const { Pool } = require('pg')
 const connectionString = 'postgresql://dinobartolome:upwork2020@database-1.csxbhznoei2x.us-east-1.rds.amazonaws.com:5432/test1'
 const pool = new Pool({
   connectionString,
 })
-
-//console.log('Working with pg config: ' + JSON.stringify(pgConfig))
+const schemaName = 'thestorybook';
 
 exports.select = (table, clause = '', sortClause = '', skip = 0, limit = 1) =>
 query(
-    `SELECT * FROM ${table} ${clause} ${sortClause} LIMIT ${limit} OFFSET ${skip}`,
+    `SELECT * FROM ${schemaName}.${table} ${clause} ${sortClause} LIMIT ${limit} OFFSET ${skip}`,
     {},
     identity => identity
   )
@@ -38,7 +31,7 @@ query(
 
 exports.count = (table, clause) =>
 query(
-    `SELECT COUNT(*) FROM ${table} ${clause}`,
+    `SELECT COUNT(*) FROM ${schemaName}.${table} ${clause}`,
     {},
     result => result.rows[0]['count']
   )
