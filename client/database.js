@@ -1,11 +1,11 @@
 const { Pool, Client } = require('pg')
 
 const envConfig = process.env.pg_CONFIG;
-const pgConfig = JSON.parse(envConfig || '{"host":"database-1.csxbhznoei2x.us-east-1.rds.amazonaws.com", "database":"themachineDB", "user":"dinobartolome", "password":"upwork2020"}');
+const pgConfig = JSON.parse(envConfig || '{"host":"database-1.csxbhznoei2x.us-east-1.rds.amazonaws.com", "database":"test1", "user":"dinobartolome", "password":"upwork2020"}');
 
 // const client = new Client(pgConfig)
 // client.connect()
-const connectionString = 'postgresql://dinobartolome:upwork2020@database-1.csxbhznoei2x.us-east-1.rds.amazonaws.com:5432/themachineDB'
+const connectionString = 'postgresql://dinobartolome:upwork2020@database-1.csxbhznoei2x.us-east-1.rds.amazonaws.com:5432/test1'
 const pool = new Pool({
   connectionString,
 })
@@ -53,6 +53,7 @@ query("SELECT * FROM information_schema.tables WHERE table_schema != 'pg_catalog
   }
   return Promise.all(
       tables.map(async table => {
+
         const columns = await describeTable(table)
         return {
           table,
@@ -65,7 +66,7 @@ query("SELECT * FROM information_schema.tables WHERE table_schema != 'pg_catalog
 
   const describeTable = table =>
   
-  query(`SELECT a.attname AS name, format_type(a.atttypid, a.atttypmod) AS type FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '${table}'::regclass AND a.attnum > 0 AND NOT a.attisdropped ORDER BY a.attnum;`, {}, result => {
+  query(`SELECT table_schema,table_name,column_name AS name,data_type AS type,case when character_maximum_length is not null then character_maximum_length else numeric_precision end as max_length, is_nullable from information_schema.columns WHERE table_schema not in ('information_schema', 'pg_catalog') AND table_name='${table}'`, {}, result => {
     return (result.rows).map(entry => {
       return {
         name: entry['name'],
