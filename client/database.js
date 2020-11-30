@@ -9,7 +9,7 @@ const connectionString = 'postgresql://dinobartolome:upwork2020@database-1.csxbh
 const pool = new Pool({
   connectionString,
 })
-
+  
 //console.log('Working with pg config: ' + JSON.stringify(pgConfig))
 
 exports.select = (table, clause = '', sortClause = '', skip = 0, limit = 1) =>
@@ -19,8 +19,30 @@ query(
     identity => identity
   )
 
-exports.insert = (table, item) =>
-query(`INSERT INTO ${table} SET ?`, item, () => item)
+exports.insert = (table, item) => {
+  //query(`INSERT INTO ${table} SET ?`, item, () => item)
+  /*let table_keys =  Object.keys(item);
+  let table_values =  Object.values(item);
+  let keys_string = table_keys.toString();
+  let values_string = table_values.toString();
+  console.log(`INSERT INTO ${table} (${keys_string}) values (${values_string}) `); 
+  query(`INSERT INTO ${table} (${keys_string}) values (${values_string})  `); */
+
+  let keys_string = '';
+  let values_string = '';
+  for (var key in item) {
+    if(key != '_id') {
+      keys_string+=key+',';  
+      values_string+='"'+item[key]+'",';
+    }
+  }
+  keys_string = keys_string.slice(0, -1);
+  values_string = values_string.slice(0, -1);
+  let query_String  = `INSERT INTO ${table} (${keys_string}) values (${values_string})`;
+  console.log(query_String);
+  query(query_String);
+}
+
 
 exports.update = (table, item) =>
 query(
