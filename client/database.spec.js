@@ -180,7 +180,7 @@ describe('Database', () => {
         null,
         [
           {
-            Tables_in_themachineDB: tableName
+            Tables_in_: tableName
           }
         ],
         null
